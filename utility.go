@@ -10,7 +10,7 @@ import (
 // Clean up if errors.
 func fileCopy(src, dest string, override bool) error {
 	// Check if destination already exists
-	if _, err := os.Stat(dest); !os.IsNotExist(err) {
+	if _, err := os.Stat(dest); !override && !os.IsNotExist(err) {
 		return fmt.Errorf("File already exists: %s", dest)
 	}
 
