@@ -48,3 +48,18 @@ func fileLink(src, dest string, override bool) error {
 	}
 	return os.Link(src, dest)
 }
+
+// Create a unique temp file name.
+func fileUnique(path string) string {
+	index := 0
+	tmpPath := ""
+	for {
+		index++
+		tmpPath = fmt.Sprintf("%s.%d.tmp", path, index)
+		_, err := os.Stat(tmpPath)
+		if os.IsNotExist(err) {
+			break
+		}
+	}
+	return tmpPath
+}

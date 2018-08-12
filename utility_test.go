@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"io/ioutil"
 	"os"
+	"path/filepath"
 	"testing"
 )
 
@@ -86,6 +87,22 @@ func TestFileLink(t *testing.T) {
 	}
 	if !os.SameFile(sandbox.Stat(sourcePath), sandbox.Stat(destPath)) {
 		fmt.Println("File2 not linked correctly")
+		t.Fail()
+	}
+}
+
+func TestFileUnique(t *testing.T) {
+	sandbox := NewSandbox(t)
+	defer sandbox.Close()
+
+	sourcePath := sandbox.Create("file.txt", []byte("Some data here"))
+
+	// Get a few unique names
+	name1 := sandbox.Create(filepath.Base(fileUnique(sourcePath)), []byte{})
+	name2 := sandbox.Create(filepath.Base(fileUnique(sourcePath)), []byte{})
+	name3 := sandbox.Create(filepath.Base(fileUnique(sourcePath)), []byte{})
+	if name1 == name2 || name1 == name3 || name2 == name3 {
+		fmt.Println("File names not unique")
 		t.Fail()
 	}
 }
