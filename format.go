@@ -37,7 +37,7 @@ func (self *SimpleFormat) Parse(name string) {
 		self.Name = parts[1] + parts[3]
 		if parts[2] == "_latest" {
 			self.Version = LATEST
-		} else if ver, err := strconv.Atoi(parts[2][2:]); err == nil {
+		} else if ver, err := strconv.Atoi(parts[2][2:]); err == nil && ver > 0 {
 			self.Version = ver
 		}
 	} else {
