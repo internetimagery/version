@@ -47,3 +47,12 @@ func (self *Sandbox) Create(name string, data []byte) string {
 	}
 	return path
 }
+
+// Stat a file. Expecting the file to exist, so throwing fatal exceptions if not.
+func (self *Sandbox) Stat(path string) os.FileInfo {
+	stat, err := os.Stat(path)
+	if err != nil {
+		self.t.Fatal(err)
+	}
+	return stat
+}

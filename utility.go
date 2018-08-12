@@ -37,3 +37,14 @@ func fileCopy(src, dest string, override bool) error {
 	}
 	return handleDest.Sync()
 }
+
+// Link one file to another.
+func fileLink(src, dest string, override bool) error {
+	if _, err := os.Stat(dest); override && err == nil {
+		err = os.Remove(dest)
+		if err != nil {
+			return err
+		}
+	}
+	return os.Link(src, dest)
+}
