@@ -3,7 +3,6 @@ package main
 import (
 	"fmt"
 	"io/ioutil"
-	"os"
 	"path/filepath"
 	"testing"
 )
@@ -50,47 +49,6 @@ func TestFileCopy(t *testing.T) {
 	}
 }
 
-func TestFileLink(t *testing.T) {
-	sandbox := NewSandbox(t)
-	defer sandbox.Close()
-
-	// Set up a file to link
-	message := []byte("Testing 123")
-	sourcePath := sandbox.Create("source.txt", message)
-	destPath := sandbox.Path("destination.txt")
-
-	// Link file!
-	err := fileLink(sourcePath, destPath, false)
-	if err != nil {
-		fmt.Println(err)
-		t.Fail()
-	}
-	if !os.SameFile(sandbox.Stat(sourcePath), sandbox.Stat(destPath)) {
-		fmt.Println("File not linked correctly")
-		t.Fail()
-	}
-
-	// Link file. Fail on existing file.
-	err = fileLink(sourcePath, destPath, false)
-	if err == nil {
-		fmt.Println("Existing file overridden...")
-		t.Fail()
-	}
-
-	// Link file. Override result.
-	message = []byte("New message")
-	sourcePath = sandbox.Create("source2.txt", message)
-	err = fileLink(sourcePath, destPath, true)
-	if err != nil {
-		fmt.Println(err)
-		t.Fail()
-	}
-	if !os.SameFile(sandbox.Stat(sourcePath), sandbox.Stat(destPath)) {
-		fmt.Println("File2 not linked correctly")
-		t.Fail()
-	}
-}
-
 func TestFileUnique(t *testing.T) {
 	sandbox := NewSandbox(t)
 	defer sandbox.Close()
@@ -105,4 +63,47 @@ func TestFileUnique(t *testing.T) {
 		fmt.Println("File names not unique")
 		t.Fail()
 	}
+}
+
+func TestFileCompare(t *testing.T) {
+	sandbox := NewSandbox(t)
+	defer sandbox.Close()
+
+	data1 := []byte("Some data n' stuff")
+	data2 := []byte("Some data is different")
+
+	source1 := sandbox.Create("source1.txt", data1)
+	source2 := sandbox.Create("source2.txt", data2)
+	source3 := sandbox.Create("source3.txt", data1)
+
+	// Two equal files
+	compared, err := fileCompare(source1, source1, 4096)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if !compared {
+		fmt.Println("Failed to compare two of the same files")
+		t.Fail()
+	}
+
+	// Two equal content files, different creation time
+	compared, err = fileCompare(source1, source3, 4096)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if !compared {
+		fmt.Println("Failed to compare two of the same content")
+		t.Fail()
+	}
+
+	// Two different content files
+	compared, err = fileCompare(source2, source3, 4096)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if compared {
+		fmt.Println("Failed to compare two different content files")
+		t.Fail()
+	}
+
 }
