@@ -35,9 +35,13 @@ func (self *SimpleFormat) Parse(name string) {
 	parts := SIMPLEPARSER.FindStringSubmatch(name)
 	if len(parts) > 2 {
 		self.Name = parts[1] + parts[3]
-		if ver, err := strconv.Atoi(parts[2][2:]); err == nil {
+		if parts[2] == "_latest" {
+			self.Version = LATEST
+		} else if ver, err := strconv.Atoi(parts[2][2:]); err == nil {
 			self.Version = ver
 		}
+	} else {
+		self.Name = name
 	}
 }
 
