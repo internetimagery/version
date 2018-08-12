@@ -55,8 +55,7 @@ func fileUnique(path string) string {
 }
 
 // Compare two files to see if they're identical
-// block: 4096
-func fileCompare(source1, source2 string, block int) (bool, error) {
+func fileCompare(source1, source2 string) (bool, error) {
 	// Check if sizes vary
 	stat1, err := os.Stat(source1)
 	if err != nil {
@@ -82,6 +81,7 @@ func fileCompare(source1, source2 string, block int) (bool, error) {
 	}
 	defer handle2.Close()
 
+	block := 4096
 	data1 := make([]byte, block)
 	data2 := make([]byte, block)
 

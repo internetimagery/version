@@ -77,7 +77,7 @@ func TestFileCompare(t *testing.T) {
 	source3 := sandbox.Create("source3.txt", data1)
 
 	// Two equal files
-	compared, err := fileCompare(source1, source1, 4096)
+	compared, err := fileCompare(source1, source1)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -87,7 +87,7 @@ func TestFileCompare(t *testing.T) {
 	}
 
 	// Two equal content files, different creation time
-	compared, err = fileCompare(source1, source3, 4096)
+	compared, err = fileCompare(source1, source3)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -97,7 +97,7 @@ func TestFileCompare(t *testing.T) {
 	}
 
 	// Two different content files
-	compared, err = fileCompare(source2, source3, 4096)
+	compared, err = fileCompare(source2, source3)
 	if err != nil {
 		t.Fatal(err)
 	}
